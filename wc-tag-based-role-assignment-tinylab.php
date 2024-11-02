@@ -1,11 +1,11 @@
 <?php
 /*
-* Plugin Name: Tag Based User Role Assignment for WooCommerce
-* Plugin URI:        https://tinylab.dev
+* Plugin Name: Tag Based User Role for WC
+* Plugin URI:        https://sarathlal.com
 * Description: Assigns roles based on product tags.
 * Version:           1.0.0
-* Author:            TinyLab
-* Author URI:        https://tinylab.dev/
+* Author:            Sarathlal N
+* Author URI:        https://sarathlal.com
 * 
 */
 
