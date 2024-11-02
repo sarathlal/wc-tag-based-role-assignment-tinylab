@@ -1,9 +1,12 @@
 <?php
 /*
-Plugin Name: Tag Based User Role Assignment for WooCommerce 
-Description: Assigns roles based on product tags.
-Version: 1.0
-Author: Sarathlal N
+* Plugin Name: Tag Based User Role Assignment for WooCommerce
+* Plugin URI:        https://tinylab.dev
+* Description: Assigns roles based on product tags.
+* Version:           1.0.0
+* Author:            TinyLab
+* Author URI:        https://tinylab.dev/
+* 
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -15,6 +18,7 @@ class WC_Tag_Based_Role_Assignment_TinyLab {
     public function __construct() {
         add_action( 'admin_menu', array( $this, 'create_settings_page' ) );
         add_action( 'admin_footer', array( $this, 'enqueue_inline_script' ) );
+        add_action( 'admin_head', array( $this, 'page_style') );
         add_action( 'admin_post_save_tag_role_assignments', array( $this, 'save_tag_role_assignments' ) );
         add_action( 'woocommerce_order_status_completed', array( $this, 'assign_role_based_on_tags' ) );
     }
@@ -22,26 +26,22 @@ class WC_Tag_Based_Role_Assignment_TinyLab {
 	public function create_settings_page() {
 		add_submenu_page(
 			'woocommerce',                      // Parent slug (WooCommerce menu)
-			'Tag-Based Role Assignment',         // Page title
-			'Tag Role Assignment',               // Menu title
+			'Tag Based User Role',         // Page title
+			'Tag Based User Role',               // Menu title
 			'manage_options',                    // Capability
 			'wc_tag_role_assignment',            // Menu slug
 			array( $this, 'settings_page_content' ), // Callback function
-			999999999999                                   // Position/order
+			999,                                  // Position/order
 		);
 	}
 
-public function settings_page_content() {
-    // Retrieve saved tag-role assignments
-    $tag_role_assignments = get_option( $this->option_name, array() );
 
-    // Retrieve product tags and roles
-    $product_tags = get_terms( array( 'taxonomy' => 'product_tag', 'hide_empty' => false ) );
-    $roles = wp_roles()->roles;
-
-    ?>
-    <div class="wrap">
-        <h1>Tag-Based Role Assignment</h1>
+public function page_style() {
+    $screen = get_current_screen();
+    if ( $screen->id !== 'woocommerce_page_wc_tag_role_assignment' ) {
+        return;
+    }
+	?>
         <style>
 			.tag-role-container-wrapper {margin-bottom:16px}
             #tag-role-container {
@@ -84,6 +84,20 @@ public function settings_page_content() {
                 margin-top: 15px;
             }
         </style>
+	<?php
+}
+
+public function settings_page_content() {
+    // Retrieve saved tag-role assignments
+    $tag_role_assignments = get_option( $this->option_name, array() );
+
+    // Retrieve product tags and roles
+    $product_tags = get_terms( array( 'taxonomy' => 'product_tag', 'hide_empty' => false ) );
+    $roles = wp_roles()->roles;
+
+    ?>
+    <div class="wrap">
+        <h1>Tag Based User Role Assignment</h1>
         <form method="post" action="<?php echo esc_url( admin_url('admin-post.php') ); ?>">
             <input type="hidden" name="action" value="save_tag_role_assignments">
             <?php wp_nonce_field( 'save_tag_role_assignments_action', 'tag_role_nonce' ); ?>
@@ -146,10 +160,11 @@ public function settings_page_content() {
     <?php
 }
 
-
-
-
 public function enqueue_inline_script() {
+    $screen = get_current_screen();
+    if ( $screen->id !== 'woocommerce_page_wc_tag_role_assignment' ) {
+        return;
+    }	
     ?>
     <script type="text/javascript">
     jQuery(document).ready(function($) {
@@ -204,7 +219,7 @@ public function enqueue_inline_script() {
                     );
                 }
             }
-            update_option( $this->option_name, $assignments );
+            update_option( $this->option_name, $assignments, 0 );
         } else {
             delete_option( $this->option_name );
         }
