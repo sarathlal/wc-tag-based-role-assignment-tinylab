@@ -3,7 +3,7 @@
 * Plugin Name: Tag Based User Role for WC
 * Plugin URI:        https://sarathlal.com
 * Description: Assigns roles based on product tags.
-* Version:           1.0.0
+* Version:           1.1
 * Author:            Sarathlal N
 * Author URI:        https://sarathlal.com
 * 
@@ -20,7 +20,7 @@ class WC_Tag_Based_Role_Assignment_TinyLab {
         add_action( 'admin_footer', array( $this, 'enqueue_inline_script' ) );
         add_action( 'admin_head', array( $this, 'page_style') );
         add_action( 'admin_post_save_tag_role_assignments', array( $this, 'save_tag_role_assignments' ) );
-        add_action( 'woocommerce_order_status_completed', array( $this, 'assign_role_based_on_tags' ) );
+        add_action( 'woocommerce_checkout_order_processed', array( $this, 'assign_role_based_on_tags' ) );
     }
 
 	public function create_settings_page() {
